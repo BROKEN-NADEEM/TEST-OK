@@ -1,131 +1,106 @@
-import requests
-import random
-import time
-import threading
-import itertools
-import sys
 import os
-from tqdm import tqdm
-from bs4 import BeautifulSoup
+import sys
+import time
+import random
+import base64
+import hashlib
+import json
+from itertools import cycle
 from colorama import Fore, Style
-from rich.panel import Panel
 
-# Logo (Fixed Escape Sequences)
-logo = r"""
-  _          _______    ______     _______    _______    _______      _______    _         _________
- ( (    /|  (  ___  )  (  __  \   (  ____ \  (  ____ \  (       )    (  ___  )  ( \        \__   __/
- |  \  ( |  | (   ) |  | (  \  )  | (    \/  | (    \/  | () () |    | (   ) |  | (           ) (   
- |   \ | |  | (___) |  | |   ) |  | (__      | (__      | || || |    | (___) |  | |           | |   
- | (\ \) |  |  ___  |  | |   | |  |  __)     |  __)     | |(_)| |    |  ___  |  | |           | |   
- | | \   |  | (   ) |  | |   ) |  | (        | (        | |   | |    | (   ) |  | |           | |   
- | )  \  |  | )   ( |  | (__/  )  | (____/\  | (____/\  | )   ( |    | )   ( |  | (____/\  ___) (___
- |/    )_)  |/     \|  (______/   (_______/  (_______/  |/     \|    |/     \|  (_______/  \_______/                                                                                                   
-"""
-
-# Smooth Print Function
-def print_smooth(text, delay=0.002):
-    for char in text:
-        sys.stdout.write(char)
+# ✨ लोडिंग एनिमेशन
+def loading_animation(text="LOADING", delay=0.2, cycles=3):
+    animation = cycle(["|", "/", "-", "\\"])
+    for _ in range(cycles):
+        sys.stdout.write(f"\r{Fore.GREEN}{text} {next(animation)}{Style.RESET_ALL}")
         sys.stdout.flush()
         time.sleep(delay)
-    print()
+    print("\r", end="")
 
-# Print Logo Smoothly
-print_smooth(logo, 0.002)
-
-# Animated Loading Function
-def animated_loading():
-    chars = itertools.cycle(["|", "/", "-", "\\"])
-    while not stop_animation:
-        sys.stdout.write(f"\r{Fore.GREEN}LOADING {next(chars)}")
+# 🎭 लोगो एनिमेशन
+def print_animated_logo(logo, delay=0.05):
+    for char in logo:
+        sys.stdout.write(Fore.CYAN + char + Style.RESET_ALL)
         sys.stdout.flush()
-        time.sleep(0.1)
+        time.sleep(delay)
+    print("\n")
 
-stop_animation = False
-loading_thread = threading.Thread(target=animated_loading)
-loading_thread.start()
+# 🔰 लोगो डिजाइन
+logo = """
+  ______ _           _     _           
+ |  ____| |         (_)   | |          
+ | |__  | | ___  ___ _  __| | ___ _ __ 
+ |  __| | |/ _ \/ __| |/ _` |/ _ \ '__|
+ | |____| |  __/\__ \ | (_| |  __/ |   
+ |______|_|\___||___/_|\__,_|\___|_|   
+                                       
+"""
 
-# Wait for Loading
-time.sleep(3)  
-stop_animation = True
-loading_thread.join()
+# 🔄 स्क्रिप्ट स्टार्टअप
+os.system('clear')
+loading_animation("Starting Chat Loader")
+print_animated_logo(logo)
 
-print(f"{Fore.GREEN}START TIME: {time.strftime('%Y-%m-%d %H:%M:%S')}")  
+# ⏳ समय दिखाएं
+print(f"{Fore.YELLOW}START TIME: {time.strftime('%Y-%m-%d %H:%M:%S')}{Style.RESET_ALL}\n")
 
-# Password System (Offline)
-def password_check():
-    correct_password = "test1234"  # Change this to your desired password
-    print(f"{Fore.YELLOW}<<━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━>>")
-    password = input("\033[1;32m𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗➜  ") 
-    print(f"{Fore.YELLOW}<<━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━>>")
+# 🔒 पासवर्ड एंटर करने का ऑप्शन
+def password_prompt():
+    print(f"{Fore.CYAN}<<━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━>>{Style.RESET_ALL}")
+    password = input(f"{Fore.GREEN}𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗 ➜ {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}<<━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━>>{Style.RESET_ALL}")
 
+    correct_password = "yourpassword123"  # इसे अपने हिसाब से सेट करें
     if password != correct_password:
-        print(f"{Fore.RED}𝗜𝗡𝗖𝗢𝗥𝗥𝗘𝗖𝗧 𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗!")
+        print(f"{Fore.RED}𝗜𝗡𝗖𝗢𝗥𝗥𝗘𝗖𝗧 𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗!{Style.RESET_ALL}")
         sys.exit()
+    else:
+        print(f"{Fore.GREEN}𝗔𝗖𝗖𝗘𝗦𝗦 𝗚𝗥𝗔𝗡𝗧𝗘𝗗!{Style.RESET_ALL}")
+        time.sleep(1)
 
-password_check()
+password_prompt()
 
-# Get Token File
-token_file = input("\033[1;30m𝗘𝗡𝗧𝗘𝗥 𝗧𝗢𝗞𝗘𝗡 𝗙𝗜𝗟𝗘 𝗣𝗔𝗧𝗛 ➜ ")
-with open(token_file, 'r') as f:
-    access_tokens = f.read().splitlines()
+# 📂 इनपुट ऑप्शन 
+cookies_file = input(f"{Fore.CYAN}Cookies फाइल नाम ➜ {Style.RESET_ALL}")
+uid = input(f"{Fore.CYAN}Encrypted UID ➜ {Style.RESET_ALL}")
+header_name = input(f"{Fore.CYAN}हेटर नाम ➜ {Style.RESET_ALL}")
+message_file = input(f"{Fore.CYAN}मैसेज फाइल नाम ➜ {Style.RESET_ALL}")
+speed_seconds = float(input(f"{Fore.CYAN}स्पीड (सेकंड) ➜ {Style.RESET_ALL}"))
 
-# Get User IDs
-num_user_ids = int(input("\033[1;32m𝗘𝗡𝗧𝗘𝗥 𝗡𝗨𝗠𝗕𝗘𝗥 𝗢𝗙 𝗣𝗢𝗦𝗧𝗦 ➜ "))
+# 🔐 एन्क्रिप्शन और डिक्रिप्शन फंक्शन
+def encrypt_message(message, key):
+    key = hashlib.sha256(key.encode()).digest()
+    encoded = base64.b64encode(message.encode()).decode()
+    return encoded
 
-# Message Dictionary
-user_messages = {}
-haters_name = {} 
+def decrypt_message(encoded, key):
+    key = hashlib.sha256(key.encode()).digest()
+    decoded = base64.b64decode(encoded).decode()
+    return decoded
 
-# Get User IDs and Messages
-for i in range(num_user_ids):
-    user_id = input(f"\033[1;32m𝗘𝗡𝗧𝗘𝗥 𝗣𝗢𝗦𝗧 𝗜𝗗 ➜ ")
-    hater_name = input(f"\033[1;32m𝗘𝗡𝗧𝗘𝗥 𝗛𝗔𝗧𝗘𝗥𝗦 𝗡𝗔𝗠𝗘 ➜ ")
-    haters_name[user_id] = hater_name
-    message_file = input(f"\033[1;32m𝗘𝗡𝗧𝗘𝗥 𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗙𝗜𝗟𝗘 ➜  ")
-    user_messages[user_id] = message_file
+# 📝 मैसेज लोड करें
+try:
+    with open(message_file, 'r', encoding='utf-8') as f:
+        messages = f.readlines()
+except:
+    print(f"{Fore.RED}मैसेज फाइल नहीं मिली!{Style.RESET_ALL}")
+    sys.exit()
 
-# Delay Settings
-delay_time = int(input("\033[1;32m𝗘𝗡𝗧𝗘𝗥 𝗗𝗘𝗟𝗔𝗬 (𝗶𝗻 𝘀𝗲𝗰𝗼𝗻𝗱𝘀) ➜ "))
+# 🎭 चैट स्टार्ट करें
+print(f"{Fore.GREEN}\n🔰 चैट स्टार्ट हो रही है...{Style.RESET_ALL}")
+time.sleep(2)
 
-# Get Profile Name Function
-def get_profile_name(access_token):
-    url = f'https://graph.facebook.com/v17.0/me?access_token={access_token}'
-    response = requests.get(url)
-    data = response.json()
-    return data.get('name')
+for message in messages:
+    message = message.strip()
+    if not message:
+        continue
+    
+    encrypted_msg = encrypt_message(message, uid)
+    decrypted_msg = decrypt_message(encrypted_msg, uid)
 
-# Send Message Function
-def send_message(access_token, user_id, message):
-    url = f"https://graph.facebook.com/v17.0/{user_id}/comments"
-    headers = {'Authorization': f'Bearer {access_token}'}
-    data = {'message': message}
+    print(f"\n{Fore.BLUE}📩 सेंडिंग ➜ {header_name}:{Style.RESET_ALL} {encrypted_msg}")
+    time.sleep(speed_seconds)
+    print(f"{Fore.MAGENTA}📥 रिसीव्ड ➜ {header_name}:{Style.RESET_ALL} {decrypted_msg}")
+    time.sleep(speed_seconds)
 
-    response = requests.post(url, headers=headers, data=data)
-    return response.status_code == 200
-
-# Main Loop
-while True:
-    for i, access_token in enumerate(access_tokens):
-        profile_name = get_profile_name(access_token)
-        if not profile_name:
-            continue
-
-        print(f'\x1b[1;37mPROFILE➜{i+1} ({profile_name})')
-
-        for user_id, message_file in user_messages.items():
-            with open(message_file, 'r') as f:
-                messages = f.read().splitlines()
-
-            hater_name = haters_name[user_id]
-            message = random.choice(messages)
-
-            if send_message(access_token, user_id, message):
-                print(f'\x1b[1;32m𝗖𝗢𝗠𝗠𝗘𝗡𝗧 𝗦𝗨𝗖𝗖𝗘𝗦𝗦 ➜ {user_id}: {hater_name + message}')
-            else:
-                print(f'\x1b[1;31m𝗙𝗔𝗜𝗟𝗘𝗗 ➜ {user_id}')
-
-            time.sleep(delay_time)
-
-    print('\x1b[1;34m𝗪𝗔𝗜𝗧𝗜𝗡𝗚 𝗙𝗢𝗥 𝗡𝗘𝗫𝗧 𝗖𝗬𝗖𝗟𝗘...')
-    time.sleep(delay_time)
+print(f"\n{Fore.GREEN}✅ चैट समाप्त!{Style.RESET_ALL}")
