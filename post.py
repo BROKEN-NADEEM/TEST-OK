@@ -1,78 +1,107 @@
 import requests
-import os
-import sys
 import time
-import random
-import json
+import sys
+import os
 from datetime import datetime
-from colorama import Fore, Style
-from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, BarColumn, TimeElapsedColumn
 
-console = Console()
+# Animation Function (Typewriter Effect)
+def animate_text(text, delay=0.01):
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+    print()
 
-# क्लियर स्क्रीन
+# Clear screen
 os.system('clear')
 
-# Animated Logo Function
-def print_animated_logo():
-    logo = [
-        "  _          _______    ______     _______    _______    _______",
-        " ( (    /|  (  ___  )  (  __  \   (  ____ \  (  ____ \  (       )",
-        " |  \  ( |  | (   ) |  | (  \  )  | (    \/  | (    \/  | () () |",
-        " |   \ | |  | (___) |  | |   ) |  | (__      | (__      | || || |",
-        " | (\ \) |  |  ___  |  | |   | |  |  __)     |  __)     | |(_)| |",
-        " | | \   |  | (   ) |  | |   ) |  | (        | (        | |   | |",
-        " | )  \  |  | )   ( |  | (__/  )  | (____/\  | (____/\  | )   ( |",
-        " |/    )_)  |/     \|  (______/   (_______/  (_______/  |/     \|"
-    ]
-    
-    for line in logo:
-        console.print(f"[cyan]{line}[/cyan]")
-        time.sleep(0.2)
+# Logo with animation
+logo = """\x1b[1;36m      
+  _          _______    ______     _______    _______    _______      _______    _         _________
+ ( (    /|  (  ___  )  (  __  \   (  ____ \  (  ____ \  (       )    (  ___  )  ( \        \__   __/
+ |  \  ( |  | (   ) |  | (  \  )  | (    \/  | (    \/  | () () |    | (   ) |  | (           ) (   
+ |   \ | |  | (___) |  | |   ) |  | (__      | (__      | || || |    | (___) |  | |           | |   
+ | (\ \) |  |  ___  |  | |   | |  |  __)     |  __)     | |(_)| |    |  ___  |  | |           | |   
+ | | \   |  | (   ) |  | |   ) |  | (        | (        | |   | |    | (   ) |  | |           | |   
+ | )  \  |  | )   ( |  | (__/  )  | (____/\  | (____/\  | )   ( |    | )   ( |  | (____/\  ___) (___
+ |/    )_)  |/     \|  (______/   (_______/  (_______/  |/     \|    |/     \|  (_______/  \_______/                                                                                                   
+"""
 
-print_animated_logo()
+animate_text(logo, 0.001)
 
-console.print("[bold green]𝗠𝗨𝗟𝗧𝗬 𝗣𝗢𝗦𝗧 𝗖𝗢𝗠𝗠𝗘𝗡𝗧𝗦 𝗧𝗢𝗢𝗟 𝗙𝗨𝗟𝗟 𝗪𝗢𝗥𝗞𝗜𝗡𝗚[/bold green]")
+# Start time
+animate_text("\033[92mSTART TIME : " + time.strftime("%Y-%m-%d %H:%M:%S"))
 
-# Password Animation
-def password_input():
-    console.print("[yellow]𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗 𝗩𝗘𝗥𝗜𝗙𝗜𝗖𝗔𝗧𝗜𝗢𝗡...[/yellow]")
-    with Progress(SpinnerColumn(), BarColumn(), TimeElapsedColumn()) as progress:
-        task = progress.add_task("Verifying...", total=100)
-        for _ in range(100):
-            time.sleep(0.02)
-            progress.update(task, advance=1)
-    
-    password = input("\033[1;32m𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗➜ ")
-    correct_password = "your_password_here"  # Replace with actual password checking logic
-    if password != correct_password:
-        console.print("[red]𝗜𝗡𝗖𝗢𝗥𝗥𝗘𝗖𝗧 𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗![/red]")
-        sys.exit()
+# Login System
+animate_text("\n\033[1;32m<<━━━━━━━━━━━━━━ LOGIN REQUIRED ━━━━━━━━━━━━━━>>\n")
+password = input("\033[1;32m𝗣𝗔𝗦𝗦𝗪𝗢𝗥𝗗 ➜  ")
+if password != "your_password":
+    animate_text("\033[1;31m❌ INCORRECT PASSWORD! EXITING...\n")
+    sys.exit()
 
-password_input()
+animate_text("\033[1;32m✅ LOGIN SUCCESSFUL!\n")
 
-# Delay Animation
-def countdown_timer(seconds):
-    for i in range(seconds, 0, -1):
-        console.print(f"[yellow]Repeating in {i} seconds...[/yellow]", end="\r")
-        time.sleep(1)
+# Load Token File
+token_file = input("\033[1;30m𝗘𝗡𝗧𝗘𝗥 𝗧𝗢𝗞𝗘𝗡 𝗙𝗜𝗟𝗘 𝗣𝗔𝗧𝗛 ➜ ")
+with open(token_file, 'r') as f:
+    access_tokens = f.read().splitlines()
 
-# Comment Sending Animation
-def send_comment(user_id, message):
-    with Progress(SpinnerColumn(), BarColumn(), TimeElapsedColumn()) as progress:
-        task = progress.add_task(f"Sending Comment to {user_id}...", total=100)
-        for _ in range(100):
-            time.sleep(0.03)
-            progress.update(task, advance=1)
+# Number of posts
+num_user_ids = int(input("\033[1;32m𝗣𝗢𝗦𝗧𝗦 𝗞𝗜 𝗦𝗔𝗡𝗞𝗛𝗬𝗔 ➜ "))
+user_messages = {}
+haters_name = {}
 
-    console.print(f"[green]Comment sent to {user_id}: {message}[/green]")
+# Collecting User IDs & Messages
+for i in range(num_user_ids):
+    user_id = input(f"\033[1;32m𝗣𝗢𝗦𝗧 𝗜𝗗 {i+1} ➜ ")
+    hater_name = input("\033[1;32m𝗛𝗔𝗧𝗘𝗥𝗦 𝗡𝗔𝗠𝗘 ➜ ")
+    message_file = input("\033[1;32m𝗠𝗘𝗦𝗦𝗔𝗚𝗘 𝗙𝗜𝗟𝗘 ➜ ")
+
+    haters_name[user_id] = hater_name
+    user_messages[user_id] = message_file
+
+# Delay Timings
+delay_time = int(input("\033[1;32m𝗗𝗘𝗟𝗔𝗬 (seconds) 𝗕𝗘𝗧𝗪𝗘𝗘𝗡 𝗠𝗘𝗦𝗦𝗔𝗚𝗘𝗦 ➜ "))
+repeat_delay = int(input("\033[1;32m𝗗𝗘𝗟𝗔𝗬 (seconds) 𝗕𝗘𝗙𝗢𝗥𝗘 𝗥𝗘𝗣𝗘𝗔𝗧𝗜𝗡𝗚 ➜ "))
+
+# Function to send message
+def send_message(access_token, user_id, message, hater_name):
+    url = f"https://graph.facebook.com/v15.0/{user_id}/comments"
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'User-Agent': 'Mozilla/5.0'
+    }
+    data = {'message': f'{hater_name} {message}'}
+
+    response = requests.post(url, headers=headers, data=data)
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    if response.status_code == 200:
+        animate_text(f"\033[1;32m[{current_time}] ✅ Comment Sent to {user_id}: {hater_name} {message}")
+        return True
+    else:
+        animate_text(f"\033[1;31m[{current_time}] ❌ Error sending comment to {user_id}: {response.content.decode()}")
+        return False
 
 # Main Loop
 while True:
-    user_id = "1234567890"  # Example User ID
-    message = "Hello, this is a test comment!"
-    
-    send_comment(user_id, message)
+    successful, failed = 0, 0
 
-    countdown_timer(10)  # 10 सेकंड का काउंटडाउन
+    for i, access_token in enumerate(access_tokens):
+        for user_id, message_file in user_messages.items():
+            hater_name = haters_name[user_id]
+            with open(message_file, 'r') as f:
+                messages = f.read().splitlines()
+
+            message = messages[i % len(messages)]
+
+            if send_message(access_token, user_id, message, hater_name):
+                successful += 1
+            else:
+                failed += 1
+
+            time.sleep(delay_time)
+
+    animate_text(f"\n\033[1;34m✅ {successful} Messages Sent, ❌ {failed} Failed!")
+    animate_text(f"\033[1;36m🔁 Waiting {repeat_delay} seconds before next cycle...\n")
+    time.sleep(repeat_delay)
